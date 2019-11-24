@@ -1,0 +1,26 @@
+sudo: required
+
+language: java
+
+services:
+  - docker
+
+branches:
+  only:
+    - master
+    - stable
+
+install: true
+
+script:
+  - ./gradlew buildDockerImage 
+  - docker images
+
+deploy:
+  - provider: script
+    skip_cleanup: true
+    script: ./gradlew pushDockerImages -i
+    on:
+      branch: master
+
+

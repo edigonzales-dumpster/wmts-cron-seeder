@@ -1,0 +1,51 @@
+plugins {
+    id "com.bmuschko.docker-remote-api" version "4.4.1"
+}
+
+apply from: "$rootDir/gradle/versioning.gradle"
+
+import java.text.SimpleDateFormat
+import com.bmuschko.gradle.docker.tasks.image.Dockerfile
+import com.bmuschko.gradle.docker.tasks.image.DockerBuildImage
+import com.bmuschko.gradle.docker.tasks.image.DockerPushImage
+import com.bmuschko.gradle.docker.tasks.container.DockerCreateContainer
+import com.bmuschko.gradle.docker.tasks.container.DockerStartContainer
+import com.bmuschko.gradle.docker.tasks.container.DockerCreateContainer.ExposedPort
+import com.bmuschko.gradle.docker.tasks.container.DockerStopContainer
+
+def getCheckedOutGitCommitHash() {
+    'git log -1 --pretty=%H'.execute().text.trim()
+}
+
+docker {
+    registryCredentials {
+        username = System.env.dockerRegistryUser
+        password = System.env.dockerRegistryPass
+    }
+}
+
+task buildDockerImage(type: DockerBuildImage) {
+    description = "Build docker image."
+    inputDir = project.rootDir
+    tags = ["sogis/wmts-cron-seeder:"+version, "sogis/wmts-cron-seeder:latest"]
+    labels = ["wmts-cron-seeder.created": new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()), 
+            "wmts-cron-seeder.git_commit":  getCheckedOutGitCommitHash(), 
+            "wmts-cron-seeder.travis_build": version]    
+}
+
+def tags = ["latest", version]
+
+tags.each { tag ->
+    def imageTag = tag.toString()
+    task "pushDockerImage_$imageTag"(type: DockerPushImage) {
+        description = "Push docker image to hub.docker.com: $imageTag"
+        imageName =  "sogis/wmts-cron-seeder:$imageTag"
+    }
+}
+
+task pushDockerImages() {
+    description = "Push docker images to hub.docker.com."
+    dependsOn {
+        tasks.findAll { task -> task.name.startsWith('pushDockerImage_') }
+    }    
+}
