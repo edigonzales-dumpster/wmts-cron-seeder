@@ -1,0 +1,31 @@
+FROM sogis/wmts-service:latest
+MAINTAINER Stefan Ziegler
+
+USER root
+
+RUN apt-get update \
+&& apt-get -y install cron sudo
+
+# Create new user
+RUN useradd -ms /bin/bash seederuser
+WORKDIR /home/seederuser
+
+# Create the pseudo log file to point to stdout
+#RUN ln -sf /proc/1/fd/1 /var/log/cron.log 
+RUN touch /home/seederuser/cron.log
+RUN chown -R seederuser:seederuser /home/seederuser/cron.log
+
+# Add files
+COPY --chown=seederuser run.sh /home/seederuser/run.sh
+COPY --chown=seederuser entrypoint.sh /home/seederuser/entrypoint.sh
+RUN chown -R seederuser:seederuser /home/seederuser && \
+    chmod -R g=u /home/seederuser
+
+#&& crontab /opt/solr/server/backup-cron \
+#&& rm /opt/solr/server/backup-cron \
+
+RUN gpasswd -a seederuser sudo && \
+echo "seederuser\tALL=(ALL:ALL) NOPASSWD: /usr/sbin/cron" >> /etc/sudoers
+USER seederuser
+CMD /bin/bash /home/seederuser/entrypoint.sh
+
