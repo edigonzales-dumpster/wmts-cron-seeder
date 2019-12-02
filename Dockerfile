@@ -1,4 +1,4 @@
-FROM sogis/wmts-service:latest
+FROM sogis/wmts-wmts:latest
 MAINTAINER Stefan Ziegler
 
 USER root
