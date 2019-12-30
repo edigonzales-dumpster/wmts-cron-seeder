@@ -1,5 +1,6 @@
+[![Build Status](https://github.com/edigonzales/wmts-cron-seeder/workflows/CI/CD/badge.svg)](https://github.com/edigonzales/wmts-cron-seeder/workflows/CI/CD/badge.svg)
+
 # wmts-cron-seeder
-[![Build Status](https://travis-ci.org/edigonzales/wmts-cron-seeder.svg?branch=master)](https://travis-ci.org/edigonzales/wmts-cron-seeder)
 
 ## TODO
 * ...
