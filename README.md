@@ -5,3 +5,4 @@
 ## TODO
 - Braucht es das Image überhaupt? Nachteil wegen Cron ist, dass root laufen muss.
 - Warum ist das Cronzeugs so "kompliziert" aufgebaut? Es gibt zwar einfachere Varianten, bei denen geht aber etwas funkional nicht (-> Herausfinden was!) see: https://blog.knoldus.com/running-a-cron-job-in-docker-container/
+- ...
